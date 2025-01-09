@@ -76,6 +76,8 @@ static Node *build_tree(void) {
     while (n >= 2) {
         Node *node1 = pop_min(&n, nodep);
         Node *node2 = pop_min(&n, nodep);
+
+        nodep[n++] = create_node(dummy, node1->count + node2->count, node1, node2);
     }
     return (n == 0)?NULL:nodep[0];
 }
