@@ -29,7 +29,6 @@ static void count_symbols(const char *filename) {
     while ((ch = fgetc(fp)) != EOF) {
         symbol_count[ch] += 1;
     }
-    printf("symcon&d",symbol_count);
 }
 
 // symbol_count をリセットする関数
@@ -38,14 +37,47 @@ static void reset_count(void) {
 }
 
 // 与えられた引数でNode構造体を作成し、そのアドレスを返す関数
-static Node *create_node(int symbol, int count, Node *left, Node *right);
+static Node *create_node(int symbol, int count, Node *left, Node *right) {
+    Node n = {.symbol = symbol, .count = count, .left = left, .right = right};
+    return n;
+}
 
 // Node構造体へのポインタが並んだ配列から、最小カウントを持つ構造体をポップしてくる関数
 // n は 配列の実効的な長さを格納する変数を指している（popするたびに更新される）
-static Node *pop_min(int *n, Node *nodep[]);
+static Node *pop_min(int *n, Node *nodep[]) {
+    int min_index = 0;
+    for (int i = 0; i < *n; i++) {
+        if (nodep[i]->count < nodep[min_index]->count) {
+            min_index = i;
+        }
+    }
+    Node *min_node = nodep[min_index];
+    for (int i = min_index; i < *n - 1; i++) {
+        nodep[i] = nodep[i+1];
+    }
+    (*n)--;
+    return min_node;
+}
 
 // ハフマン木を構成する関数
-static Node *build_tree(void);
+static Node *build_tree(void) {
+    int n = 0;
+    Node *nodep[NSYMBOLS];
+
+    for (int i = 0; i < NSYMBOLS; i++) {
+        if (symbol_count[i] == 0) {
+            continue;
+        }
+        nodep[n++] = create_node(i, symbol_count[i], NULL, NULL);
+    }
+    
+    const int dummy = -1;
+    while (n >= 2) {
+        Node *node1 = pop_min(&n, nodep);
+        Node *node2 = pop_min(&n, nodep);
+    }
+    return (n == 0)?NULL:nodep[0];
+}
 
 
 // 以下 static関数の実装
@@ -125,8 +157,6 @@ static Node *build_tree(void)
     // なぜ以下のコードで木を返したことになるか少し考えてみよう
     return (n==0)?NULL:nodep[0];
 }
-
-
 
 // Perform depth-first traversal of the tree
 // 深さ優先で木を走査する
