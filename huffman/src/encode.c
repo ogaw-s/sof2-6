@@ -38,7 +38,8 @@ static void reset_count(void) {
 
 // 与えられた引数でNode構造体を作成し、そのアドレスを返す関数
 static Node *create_node(int symbol, int count, Node *left, Node *right) {
-    Node n = {.symbol = symbol, .count = count, .left = left, .right = right};
+    Node n = (Node *)malloc(sizeof(Node));
+    n = {.symbol = symbol, .count = count, .left = left, .right = right};
     return n;
 }
 
