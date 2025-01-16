@@ -9,7 +9,7 @@ void traverse_tree(const int depth, const Node *root);
 
 static void count_symbols(const char *filename);
 
-static void reset_count(void)LS;
+static void reset_count(void);
 
 static Node *create_node(int symbol, int count, Node *left, Node *right);
 
@@ -17,7 +17,6 @@ static Node *pop_min(int *n, Node *nodep[]);
 
 static Node *build_tree(void);
 
-static void count_symbols(const char *filename);
 static void reset_count(void);
 
 static Node *create_node(int symbol, int count, Node *left, Node *right);

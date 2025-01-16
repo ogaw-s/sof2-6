@@ -82,37 +82,31 @@ static Node *build_tree(void) {
     return (n == 0)?NULL:nodep[0];
 }
 
-
-// 以下 static関数の実装
-static void count_symbols(const char *filename)
-{
+static void count_symbols(const char *filename) {
     FILE *fp = fopen(filename, "rb");
     if (fp == NULL) {
         fprintf(stderr, "error: cannot open %s\n", filename);
         exit(1);
     }
-
-    // 1Byteずつ読み込み、カウントする
-    /*
-      write a code for counting
-    */
-
+    int c;
+    while( ( c = fgetc(fp)) != EOF ){
+        symbol_count[c]++;
+    }
+    
     fclose(fp);
 }
-static void reset_count(void)
-{
+
+static void reset_count(void) {
     for (int i = 0 ; i < NSYMBOLS ; i++) symbol_count[i] = 0;
 }
 
-static Node *create_node(int symbol, int count, Node *left, Node *right)
-{
+static Node *create_node(int symbol, int count, Node *left, Node *right) {
     Node *ret = (Node *)malloc(sizeof(Node));
     *ret = (Node){ .symbol = symbol, .count = count, .left = left, .right = right};
     return ret;
 }
 
-static Node *pop_min(int *n, Node *nodep[])
-{
+static Node *pop_min(int *n, Node *nodep[]) {
     // Find the node with the smallest count
     // カウントが最小のノードを見つけてくる
     int argmin = 0;
@@ -135,8 +129,7 @@ static Node *pop_min(int *n, Node *nodep[])
     return node_min;
 }
 
-static Node *build_tree(void)
-{
+static Node *build_tree(void) {
     int n = 0;
     Node *nodep[NSYMBOLS];
     
