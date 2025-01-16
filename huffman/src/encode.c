@@ -4,13 +4,6 @@
 #include <string.h>
 #include "encode.h"
 
-// 構造体定義
-struct node{
-    int symbol;
-    int count;
-    Node *left;
-    Node *right;
-};
 
 #define NSYMBOLS 256
 #define MAX_LEN 256
@@ -117,7 +110,13 @@ void traverse_tree(const int depth, const Node *np, char *code) {
     if (np->left == NULL && np->right == NULL) {
         code[depth] = '\0';
         strcpy(code_words[np->symbol], code);
-        printf("symbol: %c, codeword: %s\n", (char)np->symbol, code);
+        if (np->symbol == 10) {
+            //改行文字
+            printf("symbol: \\n, codeword: %s\n", code);
+        }else {
+            printf("symbol: %c, codeword: %s\n", (char)np->symbol, code);
+        }
+        
         return;
     }
     code[depth] = '0';

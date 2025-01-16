@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.php": "php",
+        "tree_display.h": "c"
+    }
+}
