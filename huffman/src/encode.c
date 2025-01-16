@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <string.h>
 #include "encode.h"
 
 // 構造体定義
@@ -12,76 +13,31 @@ struct node{
 };
 
 #define NSYMBOLS 256
-
+#define MAX_LEN 256
 static int symbol_count[NSYMBOLS];
+static char code_words[NSYMBOLS][MAX_LEN];
+
 
 // 以下このソースで有効なstatic関数のプロトタイプ宣言
 
 // ファイルを読み込み、static配列の値を更新する関数
-static void count_symbols(const char *filename) {
-    FILE *fp;
-    fp = fopen(filename, "r");
-    if (fp == NULL) {
-        print("fopen error");
-        return 1;
-    }
-    int ch;
-    while ((ch = fgetc(fp)) != EOF) {
-        symbol_count[ch] += 1;
-    }
-}
+static void count_symbols(const char *filename);
 
 // symbol_count をリセットする関数
-static void reset_count(void) {
-    memset(symbol_count, 0, NSYMBOLS);
-}
+static void reset_count(void);
 
 // 与えられた引数でNode構造体を作成し、そのアドレスを返す関数
-static Node *create_node(int symbol, int count, Node *left, Node *right) {
-    Node n = (Node *)malloc(sizeof(Node));
-    n = {.symbol = symbol, .count = count, .left = left, .right = right};
-    return n;
-}
+static Node *create_node(int symbol, int count, Node *left, Node *right);
 
 // Node構造体へのポインタが並んだ配列から、最小カウントを持つ構造体をポップしてくる関数
 // n は 配列の実効的な長さを格納する変数を指している（popするたびに更新される）
-static Node *pop_min(int *n, Node *nodep[]) {
-    int min_index = 0;
-    for (int i = 0; i < *n; i++) {
-        if (nodep[i]->count < nodep[min_index]->count) {
-            min_index = i;
-        }
-    }
-    Node *min_node = nodep[min_index];
-    for (int i = min_index; i < *n - 1; i++) {
-        nodep[i] = nodep[i+1];
-    }
-    (*n)--;
-    return min_node;
-}
+static Node *pop_min(int *n, Node *nodep[]);
 
 // ハフマン木を構成する関数
-static Node *build_tree(void) {
-    int n = 0;
-    Node *nodep[NSYMBOLS];
+static Node *build_tree(void);
 
-    for (int i = 0; i < NSYMBOLS; i++) {
-        if (symbol_count[i] == 0) {
-            continue;
-        }
-        nodep[n++] = create_node(i, symbol_count[i], NULL, NULL);
-    }
-    
-    const int dummy = -1;
-    while (n >= 2) {
-        Node *node1 = pop_min(&n, nodep);
-        Node *node2 = pop_min(&n, nodep);
 
-        nodep[n++] = create_node(dummy, node1->count + node2->count, node1, node2);
-    }
-    return (n == 0)?NULL:nodep[0];
-}
-
+// 以下 static関数の実装
 static void count_symbols(const char *filename) {
     FILE *fp = fopen(filename, "rb");
     if (fp == NULL) {
@@ -92,7 +48,7 @@ static void count_symbols(const char *filename) {
     while( ( c = fgetc(fp)) != EOF ){
         symbol_count[c]++;
     }
-    
+
     fclose(fp);
 }
 
@@ -143,13 +99,11 @@ static Node *build_tree(void) {
     while (n >= 2) {
         Node *node1 = pop_min(&n, nodep);
         Node *node2 = pop_min(&n, nodep);
-        
+
         // Create a new node
-        // 選ばれた2つのノードを元に統合ノードを新規作成
-        // 作成したノードはnodep にどうすればよいか?
-
+        // pop_min によりnはnodep終端を変更しているので、終端に突っ込んで一つ増やす
+        nodep[n++] = create_node(dummy, node1->count + node2->count, node1, node2);
     }
-
     // なぜ以下のコードで木を返したことになるか少し考えてみよう
     return (n==0)?NULL:nodep[0];
 }
@@ -157,17 +111,24 @@ static Node *build_tree(void) {
 // Perform depth-first traversal of the tree
 // 深さ優先で木を走査する
 // 現状は何もしていない（再帰してたどっているだけ）
-void traverse_tree(const int depth, const Node *np)
-{			  
-    if (np == NULL || np->left == NULL) return;
+void traverse_tree(const int depth, const Node *np, char *code) {			  
+    if (np == NULL) return;
     
-    traverse_tree(depth + 1, np->left);
-    traverse_tree(depth + 1, np->right);
+    if (np->left == NULL && np->right == NULL) {
+        code[depth] = '\0';
+        strcpy(code_words[np->symbol], code);
+        printf("symbol: %c, codeword: %s\n", (char)np->symbol, code);
+        return;
+    }
+    code[depth] = '0';
+    traverse_tree(depth + 1, np->left, code);    
+    
+    code[depth] = '1';
+    traverse_tree(depth + 1, np->right, code);
 }
 
 // この関数は外部 (main) で使用される (staticがついていない)
-Node *encode(const char *filename)
-{
+Node *encode(const char *filename) {
     reset_count();
     count_symbols(filename);
     Node *root = build_tree();
