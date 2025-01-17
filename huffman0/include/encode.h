@@ -14,5 +14,4 @@ struct node{
 };
 
 // Treeを走査して表示する
-void traverse_tree(const int depth, const Node *np, char *code);
-
+void traverse_tree(const int depth, const Node *np, char codes[256][256], char *current_code);

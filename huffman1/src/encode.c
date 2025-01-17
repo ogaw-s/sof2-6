@@ -8,7 +8,7 @@
 #define NSYMBOLS 256
 #define MAX_LEN 256
 static int symbol_count[NSYMBOLS];
-static char code_words[NSYMBOLS][MAX_LEN];
+static char codes[NSYMBOLS][MAX_LEN];
 
 
 // 以下このソースで有効なstatic関数のプロトタイプ宣言
@@ -104,27 +104,32 @@ static Node *build_tree(void) {
 // Perform depth-first traversal of the tree
 // 深さ優先で木を走査する
 // 現状は何もしていない（再帰してたどっているだけ）
-void traverse_tree(const int depth, const Node *np, char *code) {			  
+void traverse_tree(const int depth, const Node *np, char codes[256][256], char *current_code) {			  
     if (np == NULL) return;
-    
+
+    // 葉ノード（シンボルを持つ）で処理
     if (np->left == NULL && np->right == NULL) {
-        code[depth] = '\0';
-        strcpy(code_words[np->symbol], code);
+        current_code[depth] = '\0'; // 符号語を終了
+        strcpy(codes[np->symbol], current_code); // 符号語をcodes配列に保存
+
+        // シンボルの表示（改行文字を特別扱い）
         if (np->symbol == 10) {
-            //改行文字
-            printf("symbol: \\n, codeword: %s\n", code);
-        }else {
-            printf("symbol: %c, codeword: %s\n", (char)np->symbol, code);
+            printf("symbol: \\n, codeword: %s\n", current_code);
+        } else {
+            printf("symbol: %c, codeword: %s\n", (char)np->symbol, current_code);
         }
-        
         return;
     }
-    code[depth] = '0';
-    traverse_tree(depth + 1, np->left, code);    
-    
-    code[depth] = '1';
-    traverse_tree(depth + 1, np->right, code);
+
+    // 左の子ノードに進む
+    current_code[depth] = '0';
+    traverse_tree(depth + 1, np->left, codes, current_code);
+
+    // 右の子ノードに進む
+    current_code[depth] = '1';
+    traverse_tree(depth + 1, np->right, codes, current_code);
 }
+
 
 // この関数は外部 (main) で使用される (staticがついていない)
 Node *encode(const char *filename) {

@@ -8,11 +8,14 @@ int main(int argc, char **argv) {
         fprintf(stderr, "usage: %s <filename>\n",argv[0]);
         exit(1);
     }
+    int max_depth = 0;
+    char codes[256][256] = {0};
+    char current_code[256] = {0};
 
     Node *root = encode(argv[1]);
-    char code[256];
-    traverse_tree(0,root,code);
-    int d = print_tree(0, root, code);
-    printf("%d",d);
+    traverse_tree(0, root, codes, current_code);
+
+    printf("\nTree Structure:\n");
+    print_tree(0, root, codes);
     return EXIT_SUCCESS;
 }
