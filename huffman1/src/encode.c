@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <string.h>
 #include "encode.h"
-
+#include "compress.h"
 
 #define NSYMBOLS 256
 #define MAX_LEN 256
@@ -101,16 +101,24 @@ static Node *build_tree(void) {
     return (n==0)?NULL:nodep[0];
 }
 
-// Perform depth-first traversal of the tree
-// 深さ優先で木を走査する
-// 現状は何もしていない（再帰してたどっているだけ）
-void traverse_tree(const int depth, const Node *np, char codes[256][256], char *current_code) {			  
+
+/*
+typedef struct huffmanobj{
+    unsigned char symbol;
+    unsigned char code_length;
+    unsigned char code;
+} Huffman_obj;
+*/
+void traverse_tree(const int depth, const Node *np, Huffman_obj *table, unsigned char *current_code) {			  
     if (np == NULL) return;
 
     // 葉ノード（シンボルを持つ）で処理
     if (np->left == NULL && np->right == NULL) {
         current_code[depth] = '\0'; // 符号語を終了
-        strcpy(codes[np->symbol], current_code); // 符号語をcodes配列に保存
+        
+        table[np->symbol].symbol = np->symbol;
+        table[np->symbol].code_length = strlen((char*)current_code);
+        strcpy(table[np->symbol].code, current_code);
 
         // シンボルの表示（改行文字を特別扱い）
         if (np->symbol == 10) {
@@ -123,11 +131,11 @@ void traverse_tree(const int depth, const Node *np, char codes[256][256], char *
 
     // 左の子ノードに進む
     current_code[depth] = '0';
-    traverse_tree(depth + 1, np->left, codes, current_code);
+    traverse_tree(depth + 1, np->left, table, current_code);
 
     // 右の子ノードに進む
     current_code[depth] = '1';
-    traverse_tree(depth + 1, np->right, codes, current_code);
+    traverse_tree(depth + 1, np->right, table, current_code);
 }
 
 

@@ -26,8 +26,9 @@ int main(int argc, char **argv) {
     }
 
     fprintf(fp, "%zu\n", size);
-    for (int i = 0; i < size; i++) 
+    for (int i = 0; i < size; i++) {
         fprintf(fp, "%f\n", d[i]);
+    }
     fclose(fp);
 
     // "wb"の'b'はwindows は必須, linux/mac はなくてもよい ("w" でOK)

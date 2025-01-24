@@ -1,5 +1,5 @@
 #pragma once
-
+#include "compress.h"
 typedef struct node Node;
    
 // ファイルをエンコードし木のrootへのポインタを返す
@@ -14,4 +14,4 @@ struct node{
 };
 
 // Treeを走査して表示する
-void traverse_tree(const int depth, const Node *np, char codes[256][256], char *current_code);
+void traverse_tree(const int depth, const Node *np, Huffman_obj *table, unsigned char *current_code);

@@ -104,7 +104,6 @@ static Node *build_tree(void) {
 // 現状は何もしていない（再帰してたどっているだけ）
 void traverse_tree(const int depth, const Node *np, char codes[256][256], char *current_code) {			  
     if (np == NULL) return;
-
     // 葉ノード（シンボルを持つ）で処理
     if (np->left == NULL && np->right == NULL) {
         current_code[depth] = '\0'; // 符号語を終了
@@ -116,6 +115,7 @@ void traverse_tree(const int depth, const Node *np, char codes[256][256], char *
         } else {
             printf("symbol: %c, codeword: %s\n", (char)np->symbol, current_code);
         }
+        
         return;
     }
 

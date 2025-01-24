@@ -11,11 +11,12 @@ void print_tree(const int depth, const Node *node, char codes[256][256]) {
 
     // 葉ノード（シンボルを持つ）
     if (node->left == NULL && node->right == NULL) {
-        if (depth)
+        
         for (int i = 0; i < depth - 2; i++) {
             printf("    ");
         }
-        printf("+----");
+        printf("+---+");
+        
         // シンボルの表示（改行文字を特別扱い）
         if (node->symbol == 10) {
             printf("\\n:%s\n", codes[node->symbol]);
@@ -24,8 +25,6 @@ void print_tree(const int depth, const Node *node, char codes[256][256]) {
         }
         return;
     }
-    
-
     // 再帰的に子ノードを処理
     
     print_tree(depth + 1, node->right, codes);
