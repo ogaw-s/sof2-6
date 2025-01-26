@@ -14,12 +14,13 @@ int main(int argc, char **argv) {
     for (int i = 0; i < 256; i++) {
         huffman_table[i].symbol = i;
         huffman_table[i].code_length = 0;
-        huffman_table[i].code[0] = '0';
+        huffman_table[i].code[0] = '\0';
     }
     Node *root = encode(argv[1]);
     traverse_tree(0, root, huffman_table, current_code);
-    for (int i = 0; i < 256; i++) {
-        printf("%c:%s\n", huffman_table[i].symbol, huffman_table[i].code);
-    }
+
+    write_huffman_table("output.dat", huffman_table);
+    compress(argv[1], "output.dat", huffman_table);
+
     return EXIT_SUCCESS;
 }

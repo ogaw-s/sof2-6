@@ -8,8 +8,6 @@
 #define NSYMBOLS 256
 #define MAX_LEN 256
 static int symbol_count[NSYMBOLS];
-static char codes[NSYMBOLS][MAX_LEN];
-
 
 // 以下このソースで有効なstatic関数のプロトタイプ宣言
 
@@ -101,14 +99,6 @@ static Node *build_tree(void) {
     return (n==0)?NULL:nodep[0];
 }
 
-
-/*
-typedef struct huffmanobj{
-    unsigned char symbol;
-    unsigned char code_length;
-    unsigned char code;
-} Huffman_obj;
-*/
 void traverse_tree(const int depth, const Node *np, Huffman_obj *table, unsigned char *current_code) {			  
     if (np == NULL) return;
 
@@ -118,7 +108,7 @@ void traverse_tree(const int depth, const Node *np, Huffman_obj *table, unsigned
         
         table[np->symbol].symbol = np->symbol;
         table[np->symbol].code_length = strlen((char*)current_code);
-        strcpy(table[np->symbol].code, current_code);
+        strcpy(table[np->symbol].code, (char*)current_code);
 
         // シンボルの表示（改行文字を特別扱い）
         if (np->symbol == 10) {
